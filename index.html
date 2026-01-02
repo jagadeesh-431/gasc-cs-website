@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CS Department - GASC Sendamangalam</title>
+  <link rel="stylesheet" href="styles.css">
+  
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f5f5; }
+    
+    /* Header */
+    header { background: linear-gradient(135deg, #004080, #002050); color: white; padding: 15px 30px; position: relative; display: flex; align-items: center; }
+    header img { height: 70px; border-radius: 8px; }
+    header h1 { margin-left: 20px; font-size: 1.8rem; }
+    .header-right { margin-left: auto; text-align: right; }
+    .header-right #currentTime { font-size: 14px; color: #ffc; }
+    
+    .marquee {
+      position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+      white-space: nowrap; animation: scroll 15s linear infinite; color: #ffc; font-size: 14px;
+    }
+    @keyframes scroll { 0% { right: -100%; } 100% { right: 100%; } }
+
+    /* Navigation */
+    nav { background: #003060; color: white; padding: 12px 20px; display: flex; justify-content: space-between; flex-wrap: wrap; }
+    nav a {
+      color: white; text-decoration: none; margin: 0 15px; cursor: pointer;
+      position: relative; transition: 0.3s; font-weight: 500; padding: 5px 0;
+    }
+    nav a::after {
+      content: ''; position: absolute; width: 0; height: 2px;
+      background: #ffcc00; left: 0; bottom: 0; transition: width 0.3s;
+    }
+    nav a:hover::after { width: 100%; }
+    nav a:hover { color: #ffcc00; }
+
+    /* Hero Section */
+    .hero {
+      background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://lh3.googleusercontent.com/gps-cs-s/AC9h4nq7C_ctOGcQX6EeyTFP2ITVFAj3qGFUX7FS03eMLvUlaQDL3q_L11mQbIW6spk92F0sC_YolxJiMnJyFwVNxvpO-X8c0Ox-gRRFTr3MqpcQqC07TwrjPg-Ki7C6SXqVT98EQ3fJMQ=s1360-w1360-h1020-rw');
+      background-size: cover; background-position: center;
+      color: white; text-align: center; padding: 140px 20px;
+      animation: fadeIn 2s ease-in-out;
+    }
+    .hero h2 { font-size: 3rem; margin-bottom: 15px; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); }
+    .hero p { font-size: 1.3rem; margin-bottom: 30px; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* CTA Buttons */
+    .cta {
+      padding: 14px 32px; font-size: 16px; border: none; border-radius: 30px;
+      cursor: pointer; margin: 8px; transition: all 0.3s ease; font-weight: 600;
+    }
+    .cta:not(.outline) { background: #ffcc00; color: #003060; }
+    .cta:not(.outline):hover { background: #ffd633; transform: translateY(-3px); box-shadow: 0 5px 20px rgba(255,204,0,0.4); }
+    .cta.outline { background: transparent; color: white; border: 2px solid white; }
+    .cta.outline:hover { background: white; color: #003060; transform: translateY(-3px); }
+
+    /* Sections */
+    section {
+      padding: 50px 40px; background: white; max-width: 1000px; margin: 50px auto;
+      border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+      animation: slideUp 1s ease;
+    }
+    section h3 { text-align: center; color: #004080; font-size: 2rem; margin-bottom: 30px; position: relative; }
+    section h3::after {
+      content: ''; display: block; width: 60px; height: 4px;
+      background: #ffcc00; margin: 15px auto 0;
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(40px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Events Grid */
+    .events-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; margin-top: 20px; }
+    .event-card {
+      background: linear-gradient(135deg, #f8f9fa, #e9ecef); padding: 25px; border-radius: 12px;
+      border-left: 4px solid #004080; transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .event-card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.15); }
+    .event-card h4 { color: #004080; margin-bottom: 10px; }
+    .event-card .date { color: #ffcc00; font-weight: 600; background: #003060; padding: 5px 12px; border-radius: 20px; display: inline-block; font-size: 12px; margin-bottom: 10px; }
+    .event-card p { color: #555; line-height: 1.6; }
+
+    /* Faculty Grid */
+    .faculty-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; margin-top: 20px; }
+    .faculty-card {
+      text-align: center; padding: 30px; background: #f8f9fa; border-radius: 12px;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .faculty-card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+    .faculty-card img {
+      width: 120px; height: 120px; border-radius: 50%; object-fit: cover;
+      border: 4px solid #004080; margin-bottom: 15px;
+    }
+    .faculty-card h4 { color: #004080; margin-bottom: 5px; }
+    .faculty-card .designation { color: #666; font-size: 14px; }
+    .faculty-card .qualification { color: #888; font-size: 13px; margin-top: 5px; }
+
+    /* About Content */
+    .about-content { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center; }
+    .about-content img { width: 100%; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+    .about-text p { color: #555; line-height: 1.8; margin-bottom: 15px; }
+    .about-text ul { color: #555; line-height: 2; padding-left: 20px; }
+
+    /* Stats */
+    .stats { display: flex; justify-content: space-around; flex-wrap: wrap; margin-top: 30px; padding: 30px; background: linear-gradient(135deg, #004080, #002050); border-radius: 12px; }
+    .stat-item { text-align: center; color: white; padding: 20px; }
+    .stat-item .number { font-size: 2.5rem; font-weight: bold; color: #ffcc00; }
+    .stat-item .label { font-size: 14px; margin-top: 5px; }
+
+    /* Contact Section */
+    .contact-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; }
+    .contact-item { text-align: center; padding: 30px; background: #f8f9fa; border-radius: 12px; }
+    .contact-item .icon { font-size: 40px; color: #004080; margin-bottom: 15px; }
+    .contact-item h4 { color: #004080; margin-bottom: 10px; }
+    .contact-item p { color: #555; }
+
+    /* Login Modal */
+    .modal {
+      display: none; position: fixed; z-index: 1000;
+      left: 0; top: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.7); justify-content: center; align-items: center;
+    }
+    .login-box {
+      background: white; padding: 40px; border-radius: 16px; width: 350px;
+      position: relative; animation: modalSlide 0.3s ease;
+    }
+    @keyframes modalSlide { from { transform: translateY(-50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    .login-box .close-btn {
+      position: absolute; top: 15px; right: 20px; font-size: 24px;
+      cursor: pointer; color: #999; transition: color 0.3s;
+    }
+    .login-box .close-btn:hover { color: #333; }
+    .login-box h2 { text-align: center; color: #004080; margin-bottom: 25px; }
+    .login-box input {
+      width: 100%; padding: 14px; margin: 10px 0; border: 2px solid #e0e0e0;
+      border-radius: 8px; font-size: 14px; transition: border-color 0.3s;
+    }
+    .login-box input:focus { outline: none; border-color: #004080; }
+    .login-box button {
+      width: 100%; padding: 14px; margin-top: 15px;
+      background: linear-gradient(135deg, #004080, #002050); color: white;
+      border: none; border-radius: 8px; font-size: 16px; cursor: pointer;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .login-box button:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(0,64,128,0.4); }
+
+    /* Footer */
+    footer {
+      background: linear-gradient(135deg, #003060, #001530); color: white;
+      padding: 50px 30px 20px; margin-top: 50px;
+    }
+    .footer-content { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 40px; max-width: 1200px; margin: 0 auto; }
+    .footer-section h4 { color: #ffcc00; margin-bottom: 20px; font-size: 1.2rem; }
+    .footer-section p, .footer-section a { color: #ccc; line-height: 2; text-decoration: none; display: block; }
+    .footer-section a:hover { color: #ffcc00; }
+    .footer-bottom { text-align: center; padding-top: 30px; margin-top: 30px; border-top: 1px solid #444; color: #888; }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      header h1 { font-size: 1.2rem; }
+      .hero h2 { font-size: 2rem; }
+      .about-content { grid-template-columns: 1fr; }
+      nav { flex-direction: column; text-align: center; }
+      nav div { margin: 5px 0; }
+    }
+
+    /* Auth Tabs */
+    .auth-tabs {
+      display: flex;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #e0e0e0;
+    }
+    .auth-tab {
+      flex: 1;
+      padding: 12px;
+      background: none;
+      border: none;
+      font-size: 16px;
+      cursor: pointer;
+      color: #666;
+      transition: all 0.3s;
+    }
+    .auth-tab.active {
+      color: #004080;
+      border-bottom: 3px solid #004080;
+      margin-bottom: -2px;
+      font-weight: 600;
+    }
+    .auth-tab:hover { color: #004080; }
+
+    /* Auth Forms */
+    .auth-form h2 {
+      text-align: center;
+      color: #004080;
+      margin-bottom: 20px;
+    }
+    .auth-form select {
+      width: 100%;
+      padding: 14px;
+      margin: 10px 0;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 14px;
+      background: white;
+      cursor: pointer;
+    }
+    .auth-form select:focus { outline: none; border-color: #004080; }
+
+    /* Google Button */
+    .google-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      padding: 12px;
+      margin-top: 10px;
+      background: white;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .google-btn:hover {
+      background: #f5f5f5;
+      border-color: #ccc;
+    }
+    .google-btn img { width: 20px; height: 20px; }
+
+    /* Auth Links */
+    .auth-link {
+      text-align: center;
+      margin-top: 15px;
+      color: #888;
+      font-size: 13px;
+    }
+    .auth-link a {
+      color: #004080;
+      cursor: pointer;
+      text-decoration: underline;
+    }
+
+    /* Auth Loader */
+    .auth-loader {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 30px;
+    }
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid #e0e0e0;
+      border-top-color: #004080;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .auth-loader p { margin-top: 15px; color: #666; }
+
+    /* Auth Message */
+    .auth-message {
+      display: none;
+      padding: 12px;
+      margin-top: 15px;
+      border-radius: 8px;
+      text-align: center;
+      font-size: 14px;
+    }
+    .auth-message.success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+    .auth-message.error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+
+    /* Profile Modal */
+    .profile-info {
+      text-align: center;
+      padding: 20px 0;
+    }
+    .profile-avatar {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, #004080, #002050);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+      margin: 0 auto 20px;
+    }
+    .profile-info p {
+      margin: 10px 0;
+      color: #555;
+    }
+    .profile-info strong { color: #004080; }
+    .logout-btn {
+      width: 100%;
+      padding: 14px;
+      background: #dc3545;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .logout-btn:hover {
+      background: #c82333;
+    }
+  </style>
+</head>
+<body>
+<header>
+  <img src="https://www.periyaruniversity.ac.in/Need/images/logo.JPG" alt="College Logo">
+  <h1>GASC SENDAMANGALAM</h1>
+  <div class="header-right">
+    <span id="currentTime"></span>
+  </div>
+</header>
+
+<nav>
+  <div>
+    <a href="#">Home</a>
+    <a href="#events">Events</a>
+    <a href="#about">About Dept</a>
+    <a href="#faculty">Faculty</a>
+    <a href="#contact">Contact</a>
+  </div>
+  <div>
+    <a href="javascript:void(0)" onclick="openStudentLogin()">Student Login</a>
+    <a href="javascript:void(0)" onclick="openStaffLogin()">Staff Login</a>
+  </div>
+</nav>
+
+<div class="hero">
+  <h2>Department of Computer Science</h2>
+  <p>Innovate • Learn • Lead</p>
+  <div>
+    <button class="cta" onclick="openStudentLogin()">Get Started</button>
+    <button class="cta outline" onclick="document.getElementById('about').scrollIntoView({behavior:'smooth'})">Learn More</button>
+  </div>
+</div>
+
+<!-- Events Section -->
+<section id="events">
+  <h3>Department Events</h3>
+  <div class="events-grid">
+    <div class="event-card">
+      <span class="date">Jan 15, 2026</span>
+      <h4>Tech Symposium 2026</h4>
+      <p>Annual technical symposium featuring coding competitions, workshops, and guest lectures from industry experts.</p>
+    </div>
+    <div class="event-card">
+      <span class="date">Feb 20, 2026</span>
+      <h4>AI & Machine Learning Workshop</h4>
+      <p>Hands-on workshop covering the fundamentals of AI, ML algorithms, and practical implementations using Python.</p>
+    </div>
+    <div class="event-card">
+      <span class="date">Mar 10, 2026</span>
+      <h4>Hackathon 2026</h4>
+      <p>24-hour coding marathon to solve real-world problems with innovative technological solutions.</p>
+    </div>
+    <div class="event-card">
+      <span class="date">Apr 05, 2026</span>
+      <h4>Industry Connect</h4>
+      <p>Interaction session with IT industry professionals for career guidance and internship opportunities.</p>
+    </div>
+  </div>
+</section>
+
+<!-- About Section -->
+<section id="about">
+  <h3>About the Department</h3>
+  <div class="about-content">
+    <div class="about-text">
+      <p>The Department of Computer Science at Government Arts and Science College, Sendamangalam was established in 2023 with a vision to produce skilled IT professionals who can contribute to the technological advancement of our nation.</p>
+      <p>Our department offers a comprehensive undergraduate program with modern curriculum covering:</p>
+      <ul>
+        <li>Programming Languages (C, C++, Java, Python)</li>
+        <li>Web Development & Database Management</li>
+        <li>Data Structures & Algorithms</li>
+        <li>Artificial Intelligence & Machine Learning</li>
+        <li>Networking & Cyber Security</li>
+      </ul>
+    </div>
+    <img src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=500" alt="Computer Lab">
+  </div>
+  
+  <div class="stats">
+    <div class="stat-item">
+      <div class="number">48</div>
+      <div class="label">Students</div>
+    </div>
+    <div class="stat-item">
+      <div class="number">5+</div>
+      <div class="label">Faculty Members</div>
+    </div>
+    <div class="stat-item">
+      <div class="number">2</div>
+      <div class="label">Computer Labs</div>
+    </div>
+    <div class="stat-item">
+      <div class="number">100%</div>
+      <div class="label">Placement Support</div>
+    </div>
+  </div>
+</section>
+
+<!-- Faculty Section -->
+<section id="faculty">
+  <h3>Our Faculty</h3>
+  <div class="faculty-grid">
+    <div class="faculty-card">
+      <img src="https://images.unsplash.com/photo-1568602471122-7832951cc4c5?w=150&h=150&fit=crop" alt="Faculty">
+      <h4>Dr. Ramesh Kumar</h4>
+      <p class="designation">Head of Department</p>
+      <p class="qualification">Ph.D in Computer Science</p>
+    </div>
+    <div class="faculty-card">
+      <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&h=150&fit=crop" alt="Faculty">
+      <h4>Mrs. Priya Devi</h4>
+      <p class="designation">Assistant Professor</p>
+      <p class="qualification">M.Sc., M.Phil., (Ph.D)</p>
+    </div>
+    <div class="faculty-card">
+      <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop" alt="Faculty">
+      <h4>Mr. Senthil Kumar</h4>
+      <p class="designation">Assistant Professor</p>
+      <p class="qualification">MCA, M.Phil.</p>
+    </div>
+    <div class="faculty-card">
+      <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?w=150&h=150&fit=crop" alt="Faculty">
+      <h4>Mrs. Lakshmi Priya</h4>
+      <p class="designation">Guest Lecturer</p>
+      <p class="qualification">M.Sc. Computer Science</p>
+    </div>
+  </div>
+</section>
+
+<!-- Contact Section -->
+<section id="contact">
+  <h3>Contact Us</h3>
+  <div class="contact-grid">
+    <div class="contact-item">
+      <div class="icon">📍</div>
+      <h4>Address</h4>
+      <p>Government Arts & Science College<br>Sendamangalam, Namakkal Dt.<br>Tamil Nadu - 637409</p>
+    </div>
+    <div class="contact-item">
+      <div class="icon">📞</div>
+      <h4>Phone</h4>
+      <p>+91 98765 43210<br>+91 04286 123456</p>
+    </div>
+    <div class="contact-item">
+      <div class="icon">✉️</div>
+      <h4>Email</h4>
+      <p>cs@gascsendamangalam.ac.in<br>keynarunkarth@gmail.com</p>
+    </div>
+    <div class="contact-item">
+      <div class="icon">🕐</div>
+      <h4>Office Hours</h4>
+      <p>Monday - Friday<br>9:00 AM - 5:00 PM</p>
+    </div>
+  </div>
+</section>
+
+<!-- Student Login Modal -->
+<div class="modal" id="studentLoginModal">
+  <div class="login-box">
+    <span class="close-btn" onclick="closeStudentLogin()">&times;</span>
+    <h2>🎓 Student Login</h2>
+    <input type="text" id="studentUsername" placeholder="Roll Number (e.g., C23UG202CSC001)">
+    <input type="password" id="studentPassword" placeholder="Password">
+    <button onclick="validateStudentLogin()">Login</button>
+    <p style="text-align:center; margin-top:15px; color:#888; font-size:12px;">
+      Roll No: C23UG202CSC001 - C23UG202CSC020<br>
+      Password: Student@123
+    </p>
+  </div>
+</div>
+
+<!-- Staff Login Modal -->
+<div class="modal" id="staffLoginModal">
+  <div class="login-box" style="border-top: 4px solid #004080;">
+    <span class="close-btn" onclick="closeStaffLogin()">&times;</span>
+    <h2>👨‍🏫 Staff Login</h2>
+    <input type="text" id="staffUsername" placeholder="Staff ID">
+    <input type="password" id="staffPassword" placeholder="Password">
+    <button onclick="validateStaffLogin()">Login</button>
+    <p style="text-align:center; margin-top:15px; color:#888; font-size:12px;">
+      Staff ID: STAFF001<br>
+      Password: Staff@123
+    </p>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer>
+  <div class="footer-content">
+    <div class="footer-section">
+      <h4>About GASC</h4>
+      <p>Government Arts & Science College, Sendamangalam is committed to providing quality education and producing skilled professionals for the nation.</p>
+    </div>
+    <div class="footer-section">
+      <h4>Quick Links</h4>
+      <a href="#">Home</a>
+      <a href="#events">Events</a>
+      <a href="#about">About Department</a>
+      <a href="#faculty">Faculty</a>
+      <a href="#contact">Contact</a>
+    </div>
+    <div class="footer-section">
+      <h4>Important Links</h4>
+      <a href="https://www.periyaruniversity.ac.in" target="_blank">Periyar University</a>
+      <a href="#">Student Portal</a>
+      <a href="#">Examination Results</a>
+      <a href="#">Library</a>
+    </div>
+    <div class="footer-section">
+      <h4>Contact Info</h4>
+      <p>📍 Sendamangalam, Namakkal</p>
+      <p>📞 +91 9342746339</p>
+      <p>✉️ keynarunkarth@gmail.com</p>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>&copy; 2026 Department of Computer Science, GASC Sendamangalam. All Rights Reserved.</p>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+<script>
+  // ============================================
+  // FIREBASE CONFIGURATION
+  // ============================================
+  const firebaseConfig = {
+    apiKey: "AIzaSyD8bZrOTnzOtxvFyIv94NBZ5EPg-Nh9-Ps",
+    authDomain: "gase-sct.firebaseapp.com",
+    projectId: "gase-sct",
+    storageBucket: "gase-sct.firebasestorage.app",
+    messagingSenderId: "689876050110",
+    appId: "1:689876050110:web:83108ee6a5cfda35d5beef"
+  };
+
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+
+  // ============================================
+  // STUDENT DATABASE (Local for validation)
+  // ============================================
+  const studentCredentials = {};
+  
+  // Generate roll numbers C23UG202CSC001 to C23UG202CSC020
+  for (let i = 1; i <= 20; i++) {
+    const rollNo = 'C23UG202CSC' + String(i).padStart(3, '0');
+    studentCredentials[rollNo] = 'Student@123';
+  }
+
+  // ============================================
+  // STAFF DATABASE (Local for validation)
+  // ============================================
+  const staffCredentials = {
+    'STAFF001': 'Staff@123'
+  };
+
+  // ============================================
+  // STUDENT MODAL FUNCTIONS
+  // ============================================
+  function openStudentLogin() {
+    document.getElementById('studentLoginModal').style.display = 'flex';
+  }
+
+  function closeStudentLogin() {
+    document.getElementById('studentLoginModal').style.display = 'none';
+    document.getElementById('studentUsername').value = '';
+    document.getElementById('studentPassword').value = '';
+  }
+
+  // ============================================
+  // STAFF MODAL FUNCTIONS
+  // ============================================
+  function openStaffLogin() {
+    document.getElementById('staffLoginModal').style.display = 'flex';
+  }
+
+  function closeStaffLogin() {
+    document.getElementById('staffLoginModal').style.display = 'none';
+    document.getElementById('staffUsername').value = '';
+    document.getElementById('staffPassword').value = '';
+  }
+
+  // Close modal when clicking outside
+  window.onclick = function(event) {
+    const studentModal = document.getElementById('studentLoginModal');
+    const staffModal = document.getElementById('staffLoginModal');
+    if (event.target === studentModal) {
+      studentModal.style.display = 'none';
+    }
+    if (event.target === staffModal) {
+      staffModal.style.display = 'none';
+    }
+  }
+
+  // ============================================
+  // STUDENT LOGIN VALIDATION
+  // ============================================
+  async function validateStudentLogin() {
+    const userId = document.getElementById('studentUsername').value.trim().toUpperCase();
+    const password = document.getElementById('studentPassword').value;
+
+    if (!userId || !password) {
+      alert('Please enter both Roll Number and Password');
+      return;
+    }
+
+    // Check student credentials
+    if (studentCredentials[userId] && studentCredentials[userId] === password) {
+      // Log login to Firestore
+      try {
+        await db.collection('loginLogs').add({
+          userId: userId,
+          loginTime: firebase.firestore.FieldValue.serverTimestamp(),
+          userType: 'Student'
+        });
+      } catch (e) {
+        console.log('Firestore logging skipped');
+      }
+      
+      alert(`🎓 Login Successful! Welcome Student: ${userId}`);
+      closeStudentLogin();
+    } else {
+      alert('Invalid Credentials. Please check your Roll Number and Password.');
+    }
+  }
+
+  // ============================================
+  // STAFF LOGIN VALIDATION
+  // ============================================
+  async function validateStaffLogin() {
+    const userId = document.getElementById('staffUsername').value.trim().toUpperCase();
+    const password = document.getElementById('staffPassword').value;
+
+    if (!userId || !password) {
+      alert('Please enter both Staff ID and Password');
+      return;
+    }
+
+    // Check staff credentials
+    if (staffCredentials[userId] && staffCredentials[userId] === password) {
+      // Log login to Firestore
+      try {
+        await db.collection('loginLogs').add({
+          userId: userId,
+          loginTime: firebase.firestore.FieldValue.serverTimestamp(),
+          userType: 'Staff'
+        });
+      } catch (e) {
+        console.log('Firestore logging skipped');
+      }
+      
+      alert(`👨‍🏫 Login Successful! Welcome Staff: ${userId}`);
+      closeStaffLogin();
+    } else {
+      alert('Invalid Credentials. Please check your Staff ID and Password.');
+    }
+  }
+
+  // Allow Enter key to submit
+  document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('studentPassword').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        validateStudentLogin();
+      }
+    });
+    document.getElementById('staffPassword').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        validateStaffLogin();
+      }
+    });
+  });
+
+  // Smooth scroll for navigation
+  document.querySelectorAll('nav a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+      e.preventDefault();
+      const target = document.querySelector(this.getAttribute('href'));
+      if(target) {
+        target.scrollIntoView({ behavior: 'smooth' });
+      }
+    });
+  });
+</script>
+</body>
+</html>
