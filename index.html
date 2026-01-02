@@ -10,13 +10,32 @@
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap');
+    
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f5f5; }
+    body { 
+      font-family: 'Inter', 'Segoe UI', Arial, sans-serif; 
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      overflow-x: hidden;
+    }
     
     /* Header */
-    header { background: linear-gradient(135deg, #004080, #002050); color: white; padding: 15px 30px; position: relative; display: flex; align-items: center; }
-    header img { height: 70px; border-radius: 8px; }
-    header h1 { margin-left: 20px; font-size: 1.8rem; }
+    header { 
+      background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #1e3c72 100%);
+      color: white; padding: 20px 40px; position: sticky; top: 0; z-index: 999;
+      display: flex; align-items: center; box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+      backdrop-filter: blur(10px);
+    }
+    header img { 
+      height: 80px; border-radius: 12px; 
+      box-shadow: 0 4px 15px rgba(255,255,255,0.2);
+      transition: transform 0.3s ease;
+    }
+    header img:hover { transform: scale(1.05); }
+    header h1 { 
+      margin-left: 25px; font-size: 2rem; font-family: 'Poppins', sans-serif;
+      font-weight: 700; letter-spacing: 0.5px; text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+    }
     .header-right { margin-left: auto; text-align: right; }
     .header-right #currentTime { font-size: 14px; color: #ffc; }
     
@@ -27,27 +46,60 @@
     @keyframes scroll { 0% { right: -100%; } 100% { right: 100%; } }
 
     /* Navigation */
-    nav { background: #003060; color: white; padding: 12px 20px; display: flex; justify-content: space-between; flex-wrap: wrap; }
+    nav { 
+      background: rgba(0, 48, 96, 0.95); color: white; padding: 16px 40px; 
+      display: flex; justify-content: space-between; flex-wrap: wrap;
+      backdrop-filter: blur(10px); box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
     nav a {
-      color: white; text-decoration: none; margin: 0 15px; cursor: pointer;
-      position: relative; transition: 0.3s; font-weight: 500; padding: 5px 0;
+      color: white; text-decoration: none; margin: 0 20px; cursor: pointer;
+      position: relative; transition: all 0.3s ease; font-weight: 500; padding: 8px 16px;
+      font-size: 15px; border-radius: 6px;
     }
+    nav a::before {
+      content: ''; position: absolute; width: 0; height: 100%;
+      background: rgba(255, 204, 0, 0.1); left: 0; top: 0; 
+      transition: width 0.3s ease; border-radius: 6px; z-index: -1;
+    }
+    nav a:hover::before { width: 100%; }
     nav a::after {
-      content: ''; position: absolute; width: 0; height: 2px;
-      background: #ffcc00; left: 0; bottom: 0; transition: width 0.3s;
+      content: ''; position: absolute; width: 0; height: 3px;
+      background: linear-gradient(90deg, #ffd700, #ffed4e); 
+      left: 50%; bottom: 0; transition: all 0.3s ease;
+      transform: translateX(-50%); border-radius: 2px;
     }
-    nav a:hover::after { width: 100%; }
-    nav a:hover { color: #ffcc00; }
+    nav a:hover::after { width: 80%; }
+    nav a:hover { color: #ffd700; transform: translateY(-2px); }
 
     /* Hero Section */
     .hero {
-      background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://lh3.googleusercontent.com/gps-cs-s/AC9h4nq7C_ctOGcQX6EeyTFP2ITVFAj3qGFUX7FS03eMLvUlaQDL3q_L11mQbIW6spk92F0sC_YolxJiMnJyFwVNxvpO-X8c0Ox-gRRFTr3MqpcQqC07TwrjPg-Ki7C6SXqVT98EQ3fJMQ=s1360-w1360-h1020-rw');
-      background-size: cover; background-position: center;
-      color: white; text-align: center; padding: 140px 20px;
-      animation: fadeIn 2s ease-in-out;
+      background-image: linear-gradient(135deg, rgba(30, 60, 114, 0.85) 0%, rgba(42, 82, 152, 0.85) 100%), 
+                        url('https://lh3.googleusercontent.com/gps-cs-s/AC9h4nq7C_ctOGcQX6EeyTFP2ITVFAj3qGFUX7FS03eMLvUlaQDL3q_L11mQbIW6spk92F0sC_YolxJiMnJyFwVNxvpO-X8c0Ox-gRRFTr3MqpcQqC07TwrjPg-Ki7C6SXqVT98EQ3fJMQ=s1360-w1360-h1020-rw');
+      background-size: cover; background-position: center; background-attachment: fixed;
+      color: white; text-align: center; padding: 160px 20px;
+      animation: fadeIn 1.5s ease-in-out; position: relative; overflow: hidden;
     }
-    .hero h2 { font-size: 3rem; margin-bottom: 15px; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); }
-    .hero p { font-size: 1.3rem; margin-bottom: 30px; }
+    .hero::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+      background: linear-gradient(45deg, transparent 30%, rgba(255,215,0,0.05) 50%, transparent 70%);
+      animation: shimmer 3s infinite;
+    }
+    @keyframes shimmer {
+      0%, 100% { transform: translateX(-100%); }
+      50% { transform: translateX(100%); }
+    }
+    .hero h2 { 
+      font-size: 3.5rem; margin-bottom: 20px; font-family: 'Poppins', sans-serif;
+      text-shadow: 3px 3px 6px rgba(0,0,0,0.5); font-weight: 800;
+      letter-spacing: 1px; position: relative; z-index: 1;
+      background: linear-gradient(to right, #fff, #ffd700);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero p { 
+      font-size: 1.5rem; margin-bottom: 40px; position: relative; z-index: 1;
+      font-weight: 300; letter-spacing: 3px; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    }
 
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(30px); }
@@ -56,24 +108,65 @@
 
     /* CTA Buttons */
     .cta {
-      padding: 14px 32px; font-size: 16px; border: none; border-radius: 30px;
-      cursor: pointer; margin: 8px; transition: all 0.3s ease; font-weight: 600;
+      padding: 16px 40px; font-size: 16px; border: none; border-radius: 50px;
+      cursor: pointer; margin: 10px; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      font-weight: 600; position: relative; overflow: hidden; z-index: 1;
+      font-family: 'Poppins', sans-serif; letter-spacing: 0.5px;
     }
-    .cta:not(.outline) { background: #ffcc00; color: #003060; }
-    .cta:not(.outline):hover { background: #ffd633; transform: translateY(-3px); box-shadow: 0 5px 20px rgba(255,204,0,0.4); }
-    .cta.outline { background: transparent; color: white; border: 2px solid white; }
-    .cta.outline:hover { background: white; color: #003060; transform: translateY(-3px); }
+    .cta::before {
+      content: ''; position: absolute; top: 50%; left: 50%;
+      width: 0; height: 0; border-radius: 50%; background: rgba(255,255,255,0.3);
+      transition: width 0.6s, height 0.6s, top 0.6s, left 0.6s;
+      transform: translate(-50%, -50%); z-index: -1;
+    }
+    .cta:hover::before {
+      width: 300px; height: 300px;
+    }
+    .cta:not(.outline) { 
+      background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%); 
+      color: #003060; box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+    }
+    .cta:not(.outline):hover { 
+      transform: translateY(-4px) scale(1.05); 
+      box-shadow: 0 8px 30px rgba(255, 215, 0, 0.6);
+    }
+    .cta.outline { 
+      background: transparent; color: white; 
+      border: 2px solid rgba(255,255,255,0.8);
+      backdrop-filter: blur(10px);
+    }
+    .cta.outline:hover { 
+      background: rgba(255,255,255,0.95); color: #1e3c72; 
+      transform: translateY(-4px) scale(1.05);
+      box-shadow: 0 8px 30px rgba(255,255,255,0.3);
+    }
 
     /* Sections */
     section {
-      padding: 50px 40px; background: white; max-width: 1000px; margin: 50px auto;
-      border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.1);
-      animation: slideUp 1s ease;
+      padding: 60px 50px; background: rgba(255,255,255,0.95); max-width: 1100px; 
+      margin: 60px auto; border-radius: 24px; 
+      box-shadow: 0 20px 60px rgba(0,0,0,0.15), 0 0 0 1px rgba(255,255,255,0.5);
+      animation: slideUp 1s ease; backdrop-filter: blur(10px);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
-    section h3 { text-align: center; color: #004080; font-size: 2rem; margin-bottom: 30px; position: relative; }
+    section:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 25px 70px rgba(0,0,0,0.2), 0 0 0 1px rgba(255,255,255,0.8);
+    }
+    section h3 { 
+      text-align: center; 
+      background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-size: 2.5rem; margin-bottom: 40px; position: relative;
+      font-family: 'Poppins', sans-serif; font-weight: 700;
+      letter-spacing: 0.5px;
+    }
     section h3::after {
-      content: ''; display: block; width: 60px; height: 4px;
-      background: #ffcc00; margin: 15px auto 0;
+      content: ''; display: block; width: 80px; height: 5px;
+      background: linear-gradient(90deg, #ffd700, #ffed4e);
+      margin: 20px auto 0; border-radius: 3px;
+      box-shadow: 0 2px 10px rgba(255, 215, 0, 0.5);
     }
 
     @keyframes slideUp {
@@ -82,30 +175,81 @@
     }
 
     /* Events Grid */
-    .events-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; margin-top: 20px; }
+    .events-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; margin-top: 30px; }
     .event-card {
-      background: linear-gradient(135deg, #f8f9fa, #e9ecef); padding: 25px; border-radius: 12px;
-      border-left: 4px solid #004080; transition: transform 0.3s, box-shadow 0.3s;
+      background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+      padding: 30px; border-radius: 16px; position: relative; overflow: hidden;
+      border-left: 5px solid transparent;
+      border-image: linear-gradient(to bottom, #1e3c72, #2a5298) 1;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      box-shadow: 0 5px 20px rgba(0,0,0,0.08);
     }
-    .event-card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.15); }
-    .event-card h4 { color: #004080; margin-bottom: 10px; }
-    .event-card .date { color: #ffcc00; font-weight: 600; background: #003060; padding: 5px 12px; border-radius: 20px; display: inline-block; font-size: 12px; margin-bottom: 10px; }
-    .event-card p { color: #555; line-height: 1.6; }
+    .event-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, #ffd700, #ffed4e);
+      transform: scaleX(0); transition: transform 0.4s ease;
+    }
+    .event-card:hover::before { transform: scaleX(1); }
+    .event-card:hover { 
+      transform: translateY(-8px) scale(1.02); 
+      box-shadow: 0 15px 40px rgba(30, 60, 114, 0.15);
+    }
+    .event-card h4 { 
+      color: #1e3c72; margin-bottom: 12px; font-size: 1.3rem;
+      font-family: 'Poppins', sans-serif; font-weight: 600;
+    }
+    .event-card .date { 
+      color: #ffd700; font-weight: 600; 
+      background: linear-gradient(135deg, #1e3c72, #2a5298);
+      padding: 6px 16px; border-radius: 25px; display: inline-block; 
+      font-size: 12px; margin-bottom: 15px;
+      box-shadow: 0 3px 10px rgba(30, 60, 114, 0.3);
+    }
+    .event-card p { color: #555; line-height: 1.8; font-size: 14px; }
 
     /* Faculty Grid */
-    .faculty-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; margin-top: 20px; }
+    .faculty-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 35px; margin-top: 30px; }
     .faculty-card {
-      text-align: center; padding: 30px; background: #f8f9fa; border-radius: 12px;
-      transition: transform 0.3s, box-shadow 0.3s;
+      text-align: center; padding: 35px; 
+      background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+      border-radius: 20px; position: relative; overflow: hidden;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      box-shadow: 0 5px 20px rgba(0,0,0,0.08);
     }
-    .faculty-card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+    .faculty-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+      background: linear-gradient(90deg, #1e3c72, #2a5298, #ffd700);
+      transform: scaleX(0); transition: transform 0.4s ease;
+    }
+    .faculty-card:hover::before { transform: scaleX(1); }
+    .faculty-card:hover { 
+      transform: translateY(-10px) scale(1.03); 
+      box-shadow: 0 20px 50px rgba(30, 60, 114, 0.2);
+    }
     .faculty-card img {
-      width: 120px; height: 120px; border-radius: 50%; object-fit: cover;
-      border: 4px solid #004080; margin-bottom: 15px;
+      width: 130px; height: 130px; border-radius: 50%; object-fit: cover;
+      border: 5px solid transparent;
+      background: linear-gradient(white, white) padding-box,
+                  linear-gradient(135deg, #1e3c72, #ffd700) border-box;
+      margin-bottom: 20px; transition: all 0.3s ease;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
     }
-    .faculty-card h4 { color: #004080; margin-bottom: 5px; }
-    .faculty-card .designation { color: #666; font-size: 14px; }
-    .faculty-card .qualification { color: #888; font-size: 13px; margin-top: 5px; }
+    .faculty-card:hover img {
+      transform: scale(1.1) rotate(5deg);
+      box-shadow: 0 12px 30px rgba(30, 60, 114, 0.3);
+    }
+    .faculty-card h4 { 
+      color: #1e3c72; margin-bottom: 8px; font-size: 1.2rem;
+      font-family: 'Poppins', sans-serif; font-weight: 600;
+    }
+    .faculty-card .designation { 
+      color: #2a5298; font-size: 14px; font-weight: 500;
+      margin-bottom: 5px;
+    }
+    .faculty-card .qualification { 
+      color: #888; font-size: 13px; margin-top: 5px;
+      font-style: italic;
+    }
 
     /* About Content */
     .about-content { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center; }
@@ -114,27 +258,84 @@
     .about-text ul { color: #555; line-height: 2; padding-left: 20px; }
 
     /* Stats */
-    .stats { display: flex; justify-content: space-around; flex-wrap: wrap; margin-top: 30px; padding: 30px; background: linear-gradient(135deg, #004080, #002050); border-radius: 12px; }
-    .stat-item { text-align: center; color: white; padding: 20px; }
-    .stat-item .number { font-size: 2.5rem; font-weight: bold; color: #ffcc00; }
-    .stat-item .label { font-size: 14px; margin-top: 5px; }
+    .stats { 
+      display: flex; justify-content: space-around; flex-wrap: wrap; 
+      margin-top: 40px; padding: 40px; 
+      background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #1e3c72 100%);
+      border-radius: 20px; position: relative; overflow: hidden;
+      box-shadow: 0 10px 40px rgba(30, 60, 114, 0.4);
+    }
+    .stats::before {
+      content: ''; position: absolute; top: -50%; left: -50%;
+      width: 200%; height: 200%; 
+      background: linear-gradient(45deg, transparent 30%, rgba(255,215,0,0.1) 50%, transparent 70%);
+      animation: statsShimmer 4s infinite;
+    }
+    @keyframes statsShimmer {
+      0%, 100% { transform: rotate(0deg); }
+      50% { transform: rotate(180deg); }
+    }
+    .stat-item { 
+      text-align: center; color: white; padding: 25px; position: relative; z-index: 1;
+      transition: transform 0.3s ease;
+    }
+    .stat-item:hover { transform: translateY(-5px); }
+    .stat-item .number { 
+      font-size: 3rem; font-weight: 800; 
+      background: linear-gradient(135deg, #ffd700, #ffed4e);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text; font-family: 'Poppins', sans-serif;
+      text-shadow: 0 4px 10px rgba(255, 215, 0, 0.3);
+    }
+    .stat-item .label { 
+      font-size: 15px; margin-top: 8px; font-weight: 400;
+      letter-spacing: 1px; opacity: 0.9;
+    }
 
     /* Contact Section */
     .contact-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; }
-    .contact-item { text-align: center; padding: 30px; background: #f8f9fa; border-radius: 12px; }
-    .contact-item .icon { font-size: 40px; color: #004080; margin-bottom: 15px; }
-    .contact-item h4 { color: #004080; margin-bottom: 10px; }
-    .contact-item p { color: #555; }
+    .contact-item { 
+      text-align: center; padding: 35px; 
+      background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+      border-radius: 16px; transition: all 0.4s ease;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+      position: relative; overflow: hidden;
+    }
+    .contact-item::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, #1e3c72, #ffd700);
+      transform: scaleX(0); transition: transform 0.4s ease;
+    }
+    .contact-item:hover::before { transform: scaleX(1); }
+    .contact-item:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 15px 40px rgba(30, 60, 114, 0.15);
+    }
+    .contact-item .icon { 
+      font-size: 48px; margin-bottom: 20px;
+      background: linear-gradient(135deg, #1e3c72, #2a5298);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text; transition: transform 0.3s ease;
+    }
+    .contact-item:hover .icon { transform: scale(1.2) rotate(10deg); }
+    .contact-item h4 { 
+      color: #1e3c72; margin-bottom: 12px; font-size: 1.2rem;
+      font-family: 'Poppins', sans-serif; font-weight: 600;
+    }
+    .contact-item p { color: #555; line-height: 1.8; }
 
     /* Login Modal */
     .modal {
       display: none; position: fixed; z-index: 1000;
       left: 0; top: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.7); justify-content: center; align-items: center;
+      background: rgba(0,0,0,0.75); justify-content: center; align-items: center;
+      backdrop-filter: blur(8px);
     }
     .login-box {
-      background: white; padding: 40px; border-radius: 16px; width: 350px;
-      position: relative; animation: modalSlide 0.3s ease;
+      background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+      padding: 45px; border-radius: 24px; width: 380px;
+      position: relative; animation: modalSlide 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.5);
     }
     @keyframes modalSlide { from { transform: translateY(-50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
     .login-box .close-btn {
@@ -142,38 +343,119 @@
       cursor: pointer; color: #999; transition: color 0.3s;
     }
     .login-box .close-btn:hover { color: #333; }
-    .login-box h2 { text-align: center; color: #004080; margin-bottom: 25px; }
+    .login-box h2 { 
+      text-align: center; 
+      background: linear-gradient(135deg, #1e3c72, #2a5298);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text; margin-bottom: 30px; font-family: 'Poppins', sans-serif;
+      font-weight: 700; font-size: 1.8rem;
+    }
     .login-box input {
-      width: 100%; padding: 14px; margin: 10px 0; border: 2px solid #e0e0e0;
-      border-radius: 8px; font-size: 14px; transition: border-color 0.3s;
+      width: 100%; padding: 16px; margin: 12px 0; border: 2px solid #e0e0e0;
+      border-radius: 12px; font-size: 14px; transition: all 0.3s ease;
+      background: rgba(255,255,255,0.9);
     }
-    .login-box input:focus { outline: none; border-color: #004080; }
+    .login-box input:focus { 
+      outline: none; border-color: #2a5298; 
+      box-shadow: 0 0 0 4px rgba(42, 82, 152, 0.1);
+      background: white;
+    }
+    
+    /* Password wrapper with eye icon */
+    .password-wrapper {
+      position: relative;
+      width: 100%;
+    }
+    .password-wrapper input {
+      padding-right: 45px;
+    }
+    .eye-icon {
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      font-size: 18px;
+      color: #888;
+      user-select: none;
+      transition: color 0.3s;
+    }
+    .eye-icon:hover {
+      color: #004080;
+    }
+    
     .login-box button {
-      width: 100%; padding: 14px; margin-top: 15px;
-      background: linear-gradient(135deg, #004080, #002050); color: white;
-      border: none; border-radius: 8px; font-size: 16px; cursor: pointer;
-      transition: transform 0.3s, box-shadow 0.3s;
+      width: 100%; padding: 16px; margin-top: 20px;
+      background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+      color: white; border: none; border-radius: 12px; font-size: 16px;
+      cursor: pointer; font-weight: 600; font-family: 'Poppins', sans-serif;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      box-shadow: 0 4px 15px rgba(30, 60, 114, 0.3);
     }
-    .login-box button:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(0,64,128,0.4); }
+    .login-box button:hover { 
+      transform: translateY(-3px) scale(1.02); 
+      box-shadow: 0 8px 30px rgba(30, 60, 114, 0.5);
+      background: linear-gradient(135deg, #2a5298 0%, #1e3c72 100%);
+    }
+    .login-box button:active {
+      transform: translateY(-1px) scale(0.98);
+    }
 
     /* Footer */
     footer {
-      background: linear-gradient(135deg, #003060, #001530); color: white;
-      padding: 50px 30px 20px; margin-top: 50px;
+      background: linear-gradient(135deg, #1e3c72 0%, #0f1f3d 50%, #1e3c72 100%);
+      color: white; padding: 60px 40px 25px; margin-top: 60px;
+      box-shadow: 0 -10px 40px rgba(0,0,0,0.2); position: relative; overflow: hidden;
     }
-    .footer-content { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 40px; max-width: 1200px; margin: 0 auto; }
-    .footer-section h4 { color: #ffcc00; margin-bottom: 20px; font-size: 1.2rem; }
-    .footer-section p, .footer-section a { color: #ccc; line-height: 2; text-decoration: none; display: block; }
-    .footer-section a:hover { color: #ffcc00; }
+    footer::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, #ffd700, #ffed4e, #ffd700);
+    }
+    .footer-content { 
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
+      gap: 50px; max-width: 1200px; margin: 0 auto;
+    }
+    .footer-section h4 { 
+      background: linear-gradient(135deg, #ffd700, #ffed4e);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text; margin-bottom: 25px; font-size: 1.3rem;
+      font-family: 'Poppins', sans-serif; font-weight: 600;
+    }
+    .footer-section p, .footer-section a { 
+      color: #ccc; line-height: 2.2; text-decoration: none; display: block;
+      transition: all 0.3s ease; font-size: 14px;
+    }
+    .footer-section a:hover { 
+      color: #ffd700; transform: translateX(5px);
+      text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+    }
     .footer-bottom { text-align: center; padding-top: 30px; margin-top: 30px; border-top: 1px solid #444; color: #888; }
 
     /* Responsive */
+    /* Scroll to Top Button */
+    #scrollTopBtn {
+      position: fixed; bottom: 30px; right: 30px; z-index: 998;
+      background: linear-gradient(135deg, #1e3c72, #2a5298);
+      color: white; border: none; border-radius: 50%;
+      width: 55px; height: 55px; font-size: 24px; cursor: pointer;
+      box-shadow: 0 5px 20px rgba(30, 60, 114, 0.4);
+      transition: all 0.3s ease; display: none;
+    }
+    #scrollTopBtn:hover {
+      transform: translateY(-5px); 
+      box-shadow: 0 8px 30px rgba(30, 60, 114, 0.6);
+      background: linear-gradient(135deg, #2a5298, #ffd700);
+    }
+
     @media (max-width: 768px) {
-      header h1 { font-size: 1.2rem; }
-      .hero h2 { font-size: 2rem; }
+      header h1 { font-size: 1.4rem; }
+      .hero h2 { font-size: 2.2rem; }
+      .hero p { font-size: 1.2rem; }
       .about-content { grid-template-columns: 1fr; }
-      nav { flex-direction: column; text-align: center; }
-      nav div { margin: 5px 0; }
+      nav { flex-direction: column; text-align: center; padding: 12px 20px; }
+      nav div { margin: 8px 0; }
+      nav a { margin: 5px 10px; }
+      section { padding: 40px 25px; margin: 40px 15px; }
     }
 
     /* Auth Tabs */
@@ -327,11 +609,96 @@
     .logout-btn:hover {
       background: #c82333;
     }
+
+    /* Profile Modal Styles */
+    .profile-modal {
+      display: none;
+      position: fixed;
+      z-index: 1001;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.8);
+      justify-content: center;
+      align-items: center;
+    }
+    .profile-box {
+      background: white;
+      padding: 30px;
+      border-radius: 20px;
+      width: 400px;
+      max-width: 90%;
+      position: relative;
+      animation: modalSlide 0.3s ease;
+      text-align: center;
+    }
+    .profile-box .close-btn {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      font-size: 28px;
+      cursor: pointer;
+      color: #999;
+      transition: color 0.3s;
+    }
+    .profile-box .close-btn:hover { color: #333; }
+    .profile-photo {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 4px solid #004080;
+      margin: 10px auto 20px;
+      display: block;
+    }
+    .profile-name {
+      font-size: 1.5rem;
+      color: #004080;
+      margin-bottom: 5px;
+    }
+    .profile-role {
+      color: #ffcc00;
+      background: #003060;
+      padding: 5px 15px;
+      border-radius: 20px;
+      display: inline-block;
+      font-size: 12px;
+      margin-bottom: 20px;
+    }
+    .profile-details {
+      text-align: left;
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 12px;
+      margin-top: 15px;
+    }
+    .profile-details p {
+      margin: 10px 0;
+      color: #555;
+      font-size: 14px;
+      display: flex;
+      justify-content: space-between;
+    }
+    .profile-details p strong {
+      color: #004080;
+    }
+    .profile-details p span {
+      color: #333;
+    }
+    .welcome-badge {
+      background: linear-gradient(135deg, #28a745, #20c997);
+      color: white;
+      padding: 10px 20px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      font-weight: 600;
+    }
   </style>
 </head>
 <body>
 <header>
-  <img src="https://www.periyaruniversity.ac.in/Need/images/logo.JPG" alt="College Logo">
+  <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSAByMk4Fc5K26qzZthKALTQX8796Xl5oRrKA&s" alt="College Logo">
   <h1>GASC SENDAMANGALAM</h1>
   <div class="header-right">
     <span id="currentTime"></span>
@@ -347,8 +714,8 @@
     <a href="#contact">Contact</a>
   </div>
   <div>
-    <a href="javascript:void(0)" onclick="openStudentLogin()">Student Login</a>
-    <a href="javascript:void(0)" onclick="openStaffLogin()">Staff Login</a>
+    <a href="javascript:openStudentLogin()">Student Login</a>
+    <a href="javascript:openStaffLogin()">Staff Login</a>
   </div>
 </nav>
 
@@ -490,7 +857,10 @@
     <span class="close-btn" onclick="closeStudentLogin()">&times;</span>
     <h2>🎓 Student Login</h2>
     <input type="text" id="studentUsername" placeholder="Roll Number (e.g., C23UG202CSC001)">
-    <input type="password" id="studentPassword" placeholder="Password">
+    <div class="password-wrapper">
+      <input type="password" id="studentPassword" placeholder="Password">
+      <span class="eye-icon" onclick="togglePassword('studentPassword', this)">👁️</span>
+    </div>
     <button onclick="validateStudentLogin()">Login</button>
     <p style="text-align:center; margin-top:15px; color:#888; font-size:12px;">
       Roll No: C23UG202CSC001 - C23UG202CSC020<br>
@@ -505,12 +875,35 @@
     <span class="close-btn" onclick="closeStaffLogin()">&times;</span>
     <h2>👨‍🏫 Staff Login</h2>
     <input type="text" id="staffUsername" placeholder="Staff ID">
-    <input type="password" id="staffPassword" placeholder="Password">
+    <div class="password-wrapper">
+      <input type="password" id="staffPassword" placeholder="Password">
+      <span class="eye-icon" onclick="togglePassword('staffPassword', this)">👁️</span>
+    </div>
     <button onclick="validateStaffLogin()">Login</button>
     <p style="text-align:center; margin-top:15px; color:#888; font-size:12px;">
       Staff ID: STAFF001<br>
       Password: Staff@123
     </p>
+  </div>
+</div>
+
+<!-- Student Profile Modal -->
+<div class="profile-modal" id="studentProfileModal">
+  <div class="profile-box">
+    <span class="close-btn" onclick="closeStudentProfile()">&times;</span>
+    <div class="welcome-badge">🎉 Welcome!</div>
+    <img id="studentPhoto" class="profile-photo" src="" alt="Student Photo">
+    <h3 class="profile-name" id="studentName"></h3>
+    <span class="profile-role">🎓 Student</span>
+    <div class="profile-details">
+      <p><strong>Roll Number:</strong> <span id="profileRollNo"></span></p>
+      <p><strong>Course:</strong> <span>B.Sc. Computer Science</span></p>
+      <p><strong>Year:</strong> <span>I Year</span></p>
+      <p><strong>Batch:</strong> <span>2023-2026</span></p>
+      <p><strong>Department:</strong> <span>Computer Science</span></p>
+      <p><strong>Email:</strong> <span id="profileEmail"></span></p>
+    </div>
+    <button class="logout-btn" onclick="logoutStudent()" style="margin-top:20px;">🚪 Logout</button>
   </div>
 </div>
 
@@ -551,41 +944,80 @@
 <script src="script.js"></script>
 <script>
   // ============================================
-  // FIREBASE CONFIGURATION
+  // FIREBASE CONFIGURATION (with error handling)
   // ============================================
-  const firebaseConfig = {
-    apiKey: "AIzaSyD8bZrOTnzOtxvFyIv94NBZ5EPg-Nh9-Ps",
-    authDomain: "gase-sct.firebaseapp.com",
-    projectId: "gase-sct",
-    storageBucket: "gase-sct.firebasestorage.app",
-    messagingSenderId: "689876050110",
-    appId: "1:689876050110:web:83108ee6a5cfda35d5beef"
-  };
-
-  // Initialize Firebase
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
-
-  // ============================================
-  // STUDENT DATABASE (Local for validation)
-  // ============================================
-  const studentCredentials = {};
-  
-  // Generate roll numbers C23UG202CSC001 to C23UG202CSC020
-  for (let i = 1; i <= 20; i++) {
-    const rollNo = 'C23UG202CSC' + String(i).padStart(3, '0');
-    studentCredentials[rollNo] = 'Student@123';
+  var db = null;
+  try {
+    const firebaseConfig = {
+      apiKey: "AIzaSyD8bZrOTnzOtxvFyIv94NBZ5EPg-Nh9-Ps",
+      authDomain: "gase-sct.firebaseapp.com",
+      projectId: "gase-sct",
+      storageBucket: "gase-sct.firebasestorage.app",
+      messagingSenderId: "689876050110",
+      appId: "1:689876050110:web:83108ee6a5cfda35d5beef"
+    };
+    firebase.initializeApp(firebaseConfig);
+    db = firebase.firestore();
+    console.log('Firebase initialized successfully');
+  } catch (e) {
+    console.log('Firebase initialization skipped:', e.message);
   }
 
   // ============================================
-  // STAFF DATABASE (Local for validation)
+  // STUDENT DATABASE WITH BIO DATA
   // ============================================
-  const staffCredentials = {
-    'STAFF001': 'Staff@123'
+  var studentDatabase = {};
+  var studentNames = [
+    'Arun Kumar', 'Bala Murugan', 'Chandru Raj', 'Deepak Kumar', 'Ezhil Arasan',
+    'Farhan Ali', 'Gokul Raj', 'Hari Krishnan', 'Inba Raj', 'Jaya Kumar',
+    'Karthik Raja', 'Lakshmi Priya', 'Manoj Kumar', 'Naveen Raj', 'Oviya Devi',
+    'Priya Dharshini', 'Ranjith Kumar', 'Santhosh Kumar', 'Tamilselvan', 'Uma Maheshwari'
+  ];
+  
+  for (var i = 1; i <= 20; i++) {
+    var rollNo = 'C23UG202CSC' + String(i).padStart(3, '0');
+    studentDatabase[rollNo] = {
+      password: 'Student@123',
+      name: studentNames[i-1],
+      photo: 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + rollNo,
+      email: rollNo.toLowerCase() + '@gasc.edu.in',
+      course: 'B.Sc. Computer Science',
+      year: 'I Year',
+      batch: '2023-2026'
+    };
+  }
+
+  // ============================================
+  // STAFF DATABASE WITH BIO DATA
+  // ============================================
+  var staffDatabase = {
+    'STAFF001': {
+      password: 'Staff@123',
+      name: 'Dr. Ramesh Kumar',
+      photo: 'https://images.unsplash.com/photo-1568602471122-7832951cc4c5?w=150&h=150&fit=crop',
+      designation: 'Head of Department',
+      qualification: 'Ph.D in Computer Science',
+      experience: '15+ Years',
+      email: 'ramesh.hod@gasc.edu.in'
+    }
   };
 
   // ============================================
-  // STUDENT MODAL FUNCTIONS
+  // PASSWORD TOGGLE FUNCTION
+  // ============================================
+  function togglePassword(inputId, eyeIcon) {
+    var input = document.getElementById(inputId);
+    if (input.type === 'password') {
+      input.type = 'text';
+      eyeIcon.innerHTML = '🙈';
+    } else {
+      input.type = 'password';
+      eyeIcon.innerHTML = '👁️';
+    }
+  }
+
+  // ============================================
+  // MODAL FUNCTIONS
   // ============================================
   function openStudentLogin() {
     document.getElementById('studentLoginModal').style.display = 'flex';
@@ -597,9 +1029,6 @@
     document.getElementById('studentPassword').value = '';
   }
 
-  // ============================================
-  // STAFF MODAL FUNCTIONS
-  // ============================================
   function openStaffLogin() {
     document.getElementById('staffLoginModal').style.display = 'flex';
   }
@@ -612,104 +1041,91 @@
 
   // Close modal when clicking outside
   window.onclick = function(event) {
-    const studentModal = document.getElementById('studentLoginModal');
-    const staffModal = document.getElementById('staffLoginModal');
-    if (event.target === studentModal) {
-      studentModal.style.display = 'none';
-    }
-    if (event.target === staffModal) {
-      staffModal.style.display = 'none';
+    if (event.target.classList.contains('modal')) {
+      event.target.style.display = 'none';
     }
   }
 
   // ============================================
-  // STUDENT LOGIN VALIDATION
+  // LOGIN VALIDATION
   // ============================================
-  async function validateStudentLogin() {
-    const userId = document.getElementById('studentUsername').value.trim().toUpperCase();
-    const password = document.getElementById('studentPassword').value;
+  function validateStudentLogin() {
+    var userId = document.getElementById('studentUsername').value.trim().toUpperCase();
+    var password = document.getElementById('studentPassword').value;
 
     if (!userId || !password) {
       alert('Please enter both Roll Number and Password');
       return;
     }
 
-    // Check student credentials
-    if (studentCredentials[userId] && studentCredentials[userId] === password) {
-      // Log login to Firestore
-      try {
-        await db.collection('loginLogs').add({
-          userId: userId,
-          loginTime: firebase.firestore.FieldValue.serverTimestamp(),
-          userType: 'Student'
-        });
-      } catch (e) {
-        console.log('Firestore logging skipped');
-      }
-      
-      alert(`🎓 Login Successful! Welcome Student: ${userId}`);
+    if (studentDatabase[userId] && studentDatabase[userId].password === password) {
+      var student = studentDatabase[userId];
       closeStudentLogin();
+      showStudentProfile(userId, student);
     } else {
       alert('Invalid Credentials. Please check your Roll Number and Password.');
     }
   }
 
-  // ============================================
-  // STAFF LOGIN VALIDATION
-  // ============================================
-  async function validateStaffLogin() {
-    const userId = document.getElementById('staffUsername').value.trim().toUpperCase();
-    const password = document.getElementById('staffPassword').value;
+  function validateStaffLogin() {
+    var userId = document.getElementById('staffUsername').value.trim().toUpperCase();
+    var password = document.getElementById('staffPassword').value;
 
     if (!userId || !password) {
       alert('Please enter both Staff ID and Password');
       return;
     }
 
-    // Check staff credentials
-    if (staffCredentials[userId] && staffCredentials[userId] === password) {
-      // Log login to Firestore
-      try {
-        await db.collection('loginLogs').add({
-          userId: userId,
-          loginTime: firebase.firestore.FieldValue.serverTimestamp(),
-          userType: 'Staff'
-        });
-      } catch (e) {
-        console.log('Firestore logging skipped');
-      }
-      
-      alert(`👨‍🏫 Login Successful! Welcome Staff: ${userId}`);
-      closeStaffLogin();
+    if (staffDatabase[userId] && staffDatabase[userId].password === password) {
+      var staff = staffDatabase[userId];
+      // Store staff data in localStorage
+      localStorage.setItem('staffData', JSON.stringify({
+        id: userId,
+        name: staff.name,
+        photo: staff.photo,
+        designation: staff.designation,
+        qualification: staff.qualification,
+        experience: staff.experience,
+        email: staff.email
+      }));
+      // Redirect to staff dashboard
+      window.location.href = 'staff-dashboard.html';
     } else {
       alert('Invalid Credentials. Please check your Staff ID and Password.');
     }
   }
 
-  // Allow Enter key to submit
-  document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById('studentPassword').addEventListener('keypress', function(e) {
-      if (e.key === 'Enter') {
-        validateStudentLogin();
-      }
-    });
-    document.getElementById('staffPassword').addEventListener('keypress', function(e) {
-      if (e.key === 'Enter') {
-        validateStaffLogin();
-      }
-    });
-  });
+  // ============================================
+  // PROFILE DISPLAY FUNCTIONS
+  // ============================================
+  function showStudentProfile(rollNo, student) {
+    document.getElementById('studentPhoto').src = student.photo;
+    document.getElementById('studentName').textContent = student.name;
+    document.getElementById('profileRollNo').textContent = rollNo;
+    document.getElementById('profileEmail').textContent = student.email;
+    document.getElementById('studentProfileModal').style.display = 'flex';
+  }
 
-  // Smooth scroll for navigation
-  document.querySelectorAll('nav a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
-      e.preventDefault();
-      const target = document.querySelector(this.getAttribute('href'));
-      if(target) {
-        target.scrollIntoView({ behavior: 'smooth' });
-      }
-    });
-  });
+  function closeStudentProfile() {
+    document.getElementById('studentProfileModal').style.display = 'none';
+  }
+
+  function logoutStudent() {
+    closeStudentProfile();
+    alert('You have been logged out successfully!');
+  }
+
+  // Close profile modals when clicking outside
+  window.onclick = function(event) {
+    if (event.target.classList.contains('modal')) {
+      event.target.style.display = 'none';
+    }
+    if (event.target.classList.contains('profile-modal')) {
+      event.target.style.display = 'none';
+    }
+  }
+
+  console.log('All login functions loaded successfully!');
 </script>
 </body>
 </html>
